@@ -1,0 +1,7 @@
+[install]
+# Mengatur agar package di-install dengan rapi di workspaces
+hoist = true
+
+[run]
+# Menjalankan script langsung menggunakan bun (lebih cepat)
+shell = "system"
