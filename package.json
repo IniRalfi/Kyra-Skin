@@ -8,12 +8,18 @@
   "scripts": {
     "dev:frontend": "bun --cwd frontend run dev",
     "dev:web": "cd backend-web && php artisan serve",
-    "dev:ai": "cd backend-ai && fastapi dev main.py",
-    "dev": "bun run dev:frontend & bun run dev:web & bun run dev:ai",
+    "dev:ai": "cd backend-ai && venv/bin/fastapi dev main.py",
+    "dev": "concurrently -c \"cyan,magenta,yellow\" -n \"FRONTEND,WEB,AI\" \"bun run dev:frontend\" \"bun run dev:web\" \"bun run dev:ai\"",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@types/bun": "latest",
+    "concurrently": "^9.2.1"
+  },
+  "module": "index.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }
