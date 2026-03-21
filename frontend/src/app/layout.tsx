@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // 💡 INI MAGIC-NYA: 'text-[85%]' otomatis mengecilkan (scale down) SEMUA komponen tailwind se-website!
-    <html lang="id" className={`${plusJakarta.variable} ${calming.variable} text-[85%]`}>
+    <html lang="id" className={`${plusJakarta.variable} ${calming.variable} text-[75%]`}>
       {/* Semua *styling* redundan kayak custom seleksi pink, text 111 disetel satu pintu di Body */}
       <body className="font-jakarta antialiased text-[#111111] overflow-x-hidden min-h-screen selection:bg-[#FAD9E6]">
         {/* Layer Background Global Beranimasi */}
