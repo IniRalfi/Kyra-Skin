@@ -11,7 +11,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 // 2. Import font Calming dari folder lokal
 const calming = localFont({
-  src: "./fonts/Calmingly.otf", // Sesuaikan nama dan ekstensi file font-mu
+  src: "./fonts/Calmingly.otf",
   variable: "--font-calming",
 });
 
