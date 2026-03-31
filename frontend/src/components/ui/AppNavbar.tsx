@@ -4,10 +4,27 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function AppNavbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const sync = () => {
+      const cart = JSON.parse(localStorage.getItem("kyra_cart") || "[]");
+      setCartCount(cart.reduce((sum: number, i: { quantity: number }) => sum + i.quantity, 0));
+    };
+    sync();
+    window.addEventListener("storage", sync);
+    // Poll setiap 1 detik biar count update real-time
+    const interval = setInterval(sync, 1000);
+    return () => {
+      window.removeEventListener("storage", sync);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -38,6 +55,19 @@ export function AppNavbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Cart Icon */}
+          <Link
+            href="/cart"
+            className="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/60 border border-white/80 hover:bg-white/90 transition-all"
+          >
+            🛒
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#e8779b] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            )}
+          </Link>
+
           {isAuthenticated ? (
             <>
               <span className="hidden md:block text-sm font-bold text-gray-600">
