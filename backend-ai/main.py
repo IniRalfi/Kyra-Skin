@@ -15,7 +15,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///../backend-web/database/laravel")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_default_db = os.path.normpath(
+    os.path.join(
+        BASE_DIR, "..", "backend-web", "database", "database.sqlite"
+    )  # ← ganti dari 'laravel'
+)
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{_default_db}")
 
 
 # ── Schema Request ──────────────────────────────────────────────────────────
