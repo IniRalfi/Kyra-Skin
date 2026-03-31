@@ -1,31 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  /* Warna default web Kyra (Soft Cream untuk background, Charcoal untuk teks) */
   --background: #fdfbf7;
-  --foreground: #2d3748;
+  --foreground: #1a1a1a;
 }
 
 @theme inline {
-  /* Mapping warna default */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* Daftarkan Palet Warna Pastel E-Commerce Kyra */
+  /* ✅ Palette Kyra (Sesuai ui-ux.md) */
   --color-soft-cream: #fdfbf7;
-  --color-dusty-pink: #f2d8d5;
+  --color-dusty-pink: #f5d0dd; /* Fix: was #f2d8d5 */
+  --color-lavender-mist: #e6ddf8; /* Tambahan yang hilang */
   --color-sage-green: #c1d7d0;
-  --color-charcoal: #2d3748;
+  --color-charcoal: #1a1a1a; /* Fix: was #2d3748 */
 
-  /* Daftarkan Custom Font yang dari layout.tsx */
   --font-jakarta: var(--font-plus-jakarta), sans-serif;
   --font-calming: var(--font-calming), cursive;
 }
 
-/* Opsi Dark Mode (Kalau kamu mau Kyra punya mode gelap) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1a202c; /* Abu-abu gelap kebiruan yang soft */
+    --background: #1a1a1a;
     --foreground: #fdfbf7;
   }
 }
@@ -33,9 +30,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  /* Jadikan Plus Jakarta Sans sebagai font default untuk seluruh body web */
   font-family: var(--font-plus-jakarta), Arial, Helvetica, sans-serif;
-  /* Biar rendering teksnya lebih tajam dan smooth */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

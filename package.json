@@ -9,9 +9,7 @@
     "dev:frontend": "cd frontend && bun run dev",
     "dev:web": "cd backend-web && php artisan serve",
     "dev:ai": "cd backend-ai && venv/bin/fastapi dev main.py --port 8001",
-    "dev": "concurrently -c \"cyan,magenta,yellow\" -n \"FRONTEND,WEB,AI\" \"bun run dev:frontend\" \"bun run dev:web\" \"bun run dev:ai\"",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "dev": "concurrently -c \"cyan,magenta,yellow\" -n \"FRONTEND,WEB,AI\" \"bun run dev:frontend\" \"bun run dev:web\" \"bun run dev:ai\""
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -21,8 +19,5 @@
   "type": "module",
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "framer-motion": "^12.36.0"
   }
 }
