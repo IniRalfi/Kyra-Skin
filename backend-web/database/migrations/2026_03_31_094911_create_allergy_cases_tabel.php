@@ -6,22 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('allergy_cases_tabel', function (Blueprint $table) {
+        Schema::create('allergy_cases', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->text('reaction_details');
+            $table->json('suspected_ingredients');
+            $table->enum('status', ['pending', 'verified_by_ai'])->default('pending');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('allergy_cases_tabel');
+        Schema::dropIfExists('allergy_cases');
     }
 };
