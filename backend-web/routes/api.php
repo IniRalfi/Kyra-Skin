@@ -31,7 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{id}',  [OrdersController::class, 'show']);
 
     // Laporan Alergi
+    Route::get('/allergies',  [AllergyController::class, 'index']);
     Route::post('/allergies', [AllergyController::class, 'store']);
+
 
     // AI Recommendation
     Route::get('/recommend', [RecommendationController::class, 'index']);
