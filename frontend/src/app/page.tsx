@@ -4,7 +4,7 @@ import MaintenanceMobile from "@/components/maintenance/MaintenanceMobile";
 
 // 🔴 GLOBAL SWITCH
 const IS_MAINTENANCE = false; // Menyalakan mode Perbaikan (Prioritas Utama)
-const IS_COMING_SOON = true; // Menyalakan mode Pra-Rilis Waitlist
+const IS_COMING_SOON = false; // Menyalakan mode Pra-Rilis Waitlist
 
 export default function RootHomePage() {
   // 1. KONDISI MAINTENANCE (Sedang Perbaikan Sistem)
