@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${plusJakarta.variable} ${calming.variable} text-[75%]`}>
+    <html lang="id" className={`${plusJakarta.variable} ${calming.variable} text-[100%]`}>
       <body className="font-jakarta antialiased text-[#111111] overflow-x-hidden min-h-screen selection:bg-[#FAD9E6]">
         <GlobalBackground />
         <AuthProvider>
