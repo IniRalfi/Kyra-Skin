@@ -1,0 +1,28 @@
+# Node & Bun (Frontend)
+node_modules/
+.bun/
+dist/
+.next/
+
+# PHP & Laravel (Backend Web)
+vendor/
+.env
+Homestead.yaml
+Homestead.json
+storage/*.key
+
+# Python & FastAPI (Backend AI)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# OS & Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Docker (Opsional jika ada data lokal)
+docker/db-data/
