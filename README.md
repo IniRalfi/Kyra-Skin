@@ -1,48 +1,43 @@
-# 🌸 Kyra - AI-Powered Skincare E-Commerce
+# 🌸 Kyra: Smart Skincare E-Commerce
 
-![Kyra Banner](https://via.placeholder.com/1200x400?text=Kyra+-+Smart+Skincare+Rcommendation+System) Kyra adalah platform e-commerce _skincare_ cerdas yang mengimplementasikan _Hyper-Personalization_ menggunakan Kecerdasan Buatan (AI). Aplikasi ini tidak hanya berfungsi sebagai toko _online_ biasa, tetapi juga bertindak sebagai konsultan kulit pribadi yang merekomendasikan produk paling aman dan sesuai dengan profil kulit pengguna, serta mampu belajar dari _feedback_ alergi pengguna.
+> _Hyper-Personalized Skincare Recommendations powered by Artificial Intelligence._
 
-Proyek ini dibangun menggunakan arsitektur **Microservices** yang di-containerize menggunakan Docker, memisahkan logika web e-commerce dan komputasi _Machine Learning_.
+**Kyra** adalah platform e-commerce kecantikan modern yang tidak hanya menjual produk, tetapi bertindak sebagai konsultan kulit cerdas. Menggunakan pendekatan _Case-Based Reasoning (CBR)_ dan algoritma _K-Nearest Neighbors (KNN)_, Kyra menganalisis profil kulit, usia, dan riwayat alergi pengguna untuk memberikan rekomendasi _skincare_ yang paling aman dan terbukti efektif.
 
-## ✨ Fitur Utama
+Dibungkus dengan antarmuka **Aurora UI** dan efek _Glassmorphism_ yang menenangkan, Kyra memberikan pengalaman belanja premium yang mulus dan estetis.
 
-### 🛍️ Core E-Commerce
+---
 
-- **Katalog Produk Dinamis:** Pencarian dan filter produk _skincare_ berdasarkan kategori dan _ingredients_.
-- **Manajemen Keranjang & Transaksi:** Sistem _checkout_ yang mulus dan aman.
-- **Sistem Manajemen Konten (Admin):** _Dashboard_ untuk mengelola data pengguna, produk, dan laporan transaksi.
+## 🛠️ Tech Stack & Arsitektur
 
-### 🧠 Artificial Intelligence (AI) Features
+Proyek ini dibangun dengan arsitektur **Microservices** di dalam sebuah **Monorepo** yang diorkestrasi oleh **Bun**.
 
-- **Smart Skincare Recommendation (Sistem Inti):** Menggunakan metode **Case-Based Reasoning (CBR)** dengan algoritma perhitungan _Euclidean Distance_ untuk mencari tingkat kemiripan pelanggan baru dengan riwayat pelanggan terdahulu berdasarkan umur, gender, dan jenis kulit.
-- **Allergy Feedback Loop (Revise & Retain):** Sistem secara otomatis memperbarui _database_ pengetahuan (basis kasus) jika pengguna melaporkan ketidakcocokan/alergi terhadap suatu produk, sehingga AI semakin pintar menghindari _ingredients_ tertentu untuk profil serupa.
-- **Face Analysis (Sistem Penunjang):** Memanfaatkan arsitektur **Jaringan Saraf Tiruan (JST) / CNN** untuk menganalisis foto wajah pengguna dan mendeteksi kondisi seperti jerawat atau kemerahan.
-- **AI Beauty Consultant (Sistem Penunjang):** Terintegrasi dengan **NLP (Google Gemini API)** sebagai _chatbot_ interaktif yang memahami konteks produk toko.
+- **Frontend:** Next.js (App Router), Tailwind CSS v4, Framer Motion
+- **Backend Web (API Gateway):** Laravel 11 (PHP 8+)
+- **Backend AI (Inference Engine):** FastAPI (Python 3+), Scikit-Learn
+- **Database:** Supabase (PostgreSQL)
 
-## 🛠️ Arsitektur & Tech Stack
+---
 
-Sistem ini dibagi menjadi tiga _service_ utama yang berjalan secara independen:
+## 📚 Dokumentasi Lengkap (Wiki)
 
-1. **Frontend (UI/UX)**
-   - Framework: Next.js / React
-   - Styling: Tailwind CSS
-2. **Backend Web (Logika E-Commerce & API Gateway)**
-   - Framework: Laravel (PHP)
-   - Auth: Laravel Sanctum / JWT
-3. **Backend AI (Machine Learning Service)**
-   - Framework: FastAPI (Python)
-   - Library: Scikit-learn (untuk CBR/KNN), TensorFlow/PyTorch (untuk JST), LangChain
-4. **Database & Infrastruktur**
-   - Database Utama: Supabase (PostgreSQL)
-   - Object Storage: Supabase Storage (untuk foto wajah & gambar produk)
-   - Deployment: Docker & Docker Compose
+Untuk menjaga struktur proyek tetap bersih dan modular, seluruh dokumentasi teknis, panduan, dan rancangan sistem telah dipisahkan ke dalam direktori `docs/`. Silakan klik tautan di bawah ini untuk membaca detail spesifik dari setiap bagian:
 
-## ⚙️ Instalasi & Menjalankan di Local
+1. **[🏛️ Arsitektur Sistem & Logika AI](docs/architecture.md)** _(Penjelasan topologi microservices, komunikasi antar-layer, dan siklus 4R pada sistem pakar)_
+2. **[🎨 Panduan UI/UX & Design System](docs/ui-ux.md)** _(Aturan palet warna pastel, tipografi Plus Jakarta Sans & Calming, serta referensi Aurora UI)_
+3. **[🗄️ Skema Database (Supabase)](docs/database.md)** _(ERD, rancangan tabel profil user, produk, dan riwayat alergi / knowledge base AI)_
+4. **[🗺️ Rancangan Sistem, Fitur, & Roadmap](docs/features-roadmap.md)** _(Alur kerja pengguna dari awal hingga akhir, daftar fitur per-service, dan To-Do List pengembangan)_
+5. **[💻 Panduan Setup Lokal (Local Development)](docs/setup-local.md)** _(Cara instalasi environment, dependencies, dan menjalankan 3 server sekaligus dengan satu command)_
+6. **[🚀 Panduan Deployment (Serverless Cloud)](docs/deployment.md)** _(Cara deploy Next.js ke Vercel, FastAPI ke Render, dan Laravel ke Railway)_
 
-Pastikan Anda sudah menginstal **Docker** dan **Docker Compose** di perangkat Anda.
+---
 
-1. Clone repositori ini:
-   ```bash
-   git clone [https://github.com/username-kamu/kyra-ecommerce.git](https://github.com/username-kamu/kyra-ecommerce.git)
-   cd kyra-ecommerce
-   ```
+## 🚀 Quick Start (Menjalankan Proyek)
+
+Jika Anda ingin langsung mencoba menjalankan proyek ini di komputer lokal, pastikan Anda telah membaca **[Panduan Setup Lokal](docs/setup-local.md)** untuk mengatur file `.env` dan _virtual environment_ Python.
+
+Jika semua _setup_ sudah selesai, jalankan perintah sakti ini di _root_ direktori:
+
+```bash
+bun run dev
+```
