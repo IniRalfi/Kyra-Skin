@@ -48,9 +48,14 @@ export function AppNavbar() {
             Katalog
           </Link>
           {isAuthenticated && (
-            <Link href="/orders" className="hover:text-gray-800 transition-colors">
-              Pesananku
-            </Link>
+            <>
+              <Link href="/orders" className="hover:text-gray-800 transition-colors">
+                Pesananku
+              </Link>
+              <Link href="/profile" className="hover:text-gray-800 transition-colors">
+                Profil
+              </Link>
+            </>
           )}
         </div>
 

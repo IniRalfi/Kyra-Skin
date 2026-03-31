@@ -12,7 +12,7 @@ interface OrderItem {
   id: number;
   quantity: number;
   price_at_purchase: number;
-  product: { name: string; category: string };
+  product: { id: number; name: string; category: string };
 }
 
 interface Order {
@@ -150,6 +150,12 @@ export default function OrdersPage() {
                           <span className="font-bold text-[#111]">
                             Rp {(item.price_at_purchase * item.quantity).toLocaleString("id-ID")}
                           </span>
+                          <Link
+                            href={`/report-allergy/${item.product?.id ?? 0}`}
+                            className="text-[11px] font-bold text-red-400 hover:text-red-500 transition-colors"
+                          >
+                            Laporkan Reaksi 🔴
+                          </Link>
                         </div>
                       ))}
                     </div>
