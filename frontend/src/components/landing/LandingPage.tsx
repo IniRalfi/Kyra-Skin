@@ -2,7 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+
+import logoImage from "../../../assets/logo.png";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const fadeUp = (delay = 0) => ({
@@ -28,32 +31,42 @@ function Navbar() {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease }}
-      className="fixed top-0 w-full z-50 px-4 md:px-8 py-4"
+      className="fixed top-0 w-full z-50 px-4 md:px-8 py-5"
     >
-      <div className="max-w-6xl mx-auto flex justify-between items-center bg-white/70 backdrop-blur-xl rounded-full px-6 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.05)] border border-white">
-        <span className="text-2xl font-extrabold tracking-tight">
-          Kyra<span className="text-[#e8779b]">.</span>
-        </span>
+      <div className="max-w-5xl mx-auto flex justify-between items-center bg-white/75 backdrop-blur-2xl rounded-[32px] px-3 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)] border border-white/60">
+        {/* LOGO AREA */}
+        <div className="flex items-center pl-2 md:pl-4">
+          <Link href="/" className="flex items-center group">
+            <Image
+              src={logoImage}
+              alt="Kyra Logo"
+              className="h-8 md:h-10 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
+              priority
+            />
+          </Link>
+        </div>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-500">
-          <a href="#features" className="hover:text-gray-800 transition-colors">
+        {/* MENU TENGAH */}
+        <div className="hidden md:flex items-center gap-8 text-[13px] font-bold text-gray-500 uppercase tracking-wider">
+          <a href="#features" className="hover:text-[#111] transition-colors">
             Fitur
           </a>
-          <a href="#how-it-works" className="hover:text-gray-800 transition-colors">
+          <a href="#how-it-works" className="hover:text-[#111] transition-colors">
             Cara Kerja
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* AUTH BUTTONS */}
+        <div className="flex items-center gap-2 pr-1">
           <Link
             href="/login"
-            className="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors px-4 py-2"
+            className="text-sm font-bold text-gray-600 hover:text-[#111] transition-colors px-5 py-2.5 rounded-full hover:bg-gray-100/50"
           >
             Masuk
           </Link>
           <Link
             href="/register"
-            className="bg-[#111] text-white text-sm font-bold px-5 py-2.5 rounded-full hover:bg-black transition-all active:scale-95 shadow-md"
+            className="bg-[#111] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-black transition-all active:scale-95 shadow-md hover:shadow-xl hover:shadow-black/10"
           >
             Coba Gratis
           </Link>

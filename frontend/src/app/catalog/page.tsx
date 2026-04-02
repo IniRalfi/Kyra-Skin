@@ -11,6 +11,100 @@ import { useEffect, useState } from "react";
 
 const CATEGORIES = ["Semua", "Toner", "Serum", "Moisturizer", "Sunscreen", "Cleanser", "Mask"];
 
+// Animasi CBR untuk di Pamerkan ke User/Demo
+function CbrLoadingAnimation() {
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const timer1 = setTimeout(() => setStep(1), 1000);
+    const timer2 = setTimeout(() => setStep(2), 2200);
+    const timer3 = setTimeout(() => setStep(3), 3600);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
+
+  const steps = [
+    { icon: "⚙️", text: "Mengekstrak profil dan atribut kulitmu..." },
+    { icon: "🔍", text: "Mencari data pengguna server (k-NN Algoritma)..." },
+    { icon: "📊", text: "Membandingkan Euclidean Distance (Similarity)..." },
+    { icon: "🛡️", text: "Menyaring produk dari riwayat alergen..." },
+  ];
+
+  return (
+    <div className="bg-white/80 backdrop-blur-xl border border-gray-100 rounded-[28px] p-6 md:p-8 mb-12 shadow-[0_12px_44px_rgba(0,0,0,0.05)] relative overflow-hidden">
+      {/* Progress bar di atas */}
+      <div
+        className="absolute top-0 left-0 h-1 bg-[#111] transition-all duration-[4300ms] ease-linear"
+        style={{ width: `${(step + 1) * 25}%` }}
+      />
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
+        <div className="w-16 h-16 shrink-0 rounded-full bg-gradient-to-br from-[#F5D0DD] to-[#E6DDF8] flex items-center justify-center text-2xl animate-pulse shadow-inner">
+          🧠
+        </div>
+        <div className="flex-1 w-full relative h-[45px] md:h-[30px] flex items-center">
+          {steps.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: step === i ? 1 : 0, y: step === i ? 0 : -15 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 flex items-center gap-3 font-bold text-gray-700 text-sm md:text-base pointer-events-none"
+            >
+              <span className="text-xl drop-shadow-sm">{s.icon}</span> {s.text}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mock Table Animasi CBR */}
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: step >= 2 ? 1 : 0, height: step >= 2 ? "auto" : 0 }}
+        className="mt-8 border-t border-gray-100 pt-6"
+      >
+        <p className="text-[11px] uppercase font-extrabold text-gray-400 mb-4 tracking-widest pl-2">
+          Case-Based Reasoning Engine / Real-time Distance Matrix
+        </p>
+        <div className="bg-gray-50/50 rounded-2xl p-4 overflow-x-auto">
+          <div className="min-w-[400px]">
+            <div className="grid grid-cols-4 text-xs font-bold text-gray-400 border-b border-gray-200 pb-3 mb-2 px-2">
+              <div>KASUS LAMA (USERID)</div>
+              <div>ATRIBUT KULIT</div>
+              <div>SELISIH USIA</div>
+              <div className="text-right">TINGKAT KEMIRIPAN (SIMILARITY)</div>
+            </div>
+            <div className="space-y-1">
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: step >= 2 ? 1 : 0, x: step >= 2 ? 0 : -10 }}
+                  transition={{ delay: 2.2 + i * 0.3 }}
+                  className="grid grid-cols-4 text-sm font-bold text-gray-700 py-3 px-2 border-b border-gray-100/50 last:border-0 items-center"
+                >
+                  <div className="text-gray-500 font-mono text-xs">
+                    #{Math.floor(Math.random() * 8000 + 1000)}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-green-400"></span> Identik
+                  </div>
+                  <div className="text-gray-500">± {Math.floor(Math.random() * 3)} Tahun</div>
+                  <div className="text-right text-[#e8779b] font-extrabold text-base">
+                    {(98.5 - i * 3.2 - Math.random() * 2).toFixed(1)}% Match
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function CatalogPage() {
   const { isAuthenticated, hasProfile } = useAuth();
 
@@ -30,13 +124,26 @@ export default function CatalogPage() {
       .finally(() => setLoading(false));
   }, [category]);
 
+  const [isRecommendLoading, setIsRecommendLoading] = useState(false);
+
   // Fetch AI Recommendations
   useEffect(() => {
     if (!isAuthenticated || !hasProfile) return;
+    setIsRecommendLoading(true);
+
     api
       .get<{ products: Product[] }>("/recommend")
-      .then((res) => setRecommendations(res.products ?? []))
-      .catch(() => setRecommendations([]));
+      .then((res) => {
+        // Tahan render sebentar (4.5 detik) buat nunjukin animasi proses CBR!
+        setTimeout(() => {
+          setRecommendations(res.products ?? []);
+          setIsRecommendLoading(false);
+        }, 4500);
+      })
+      .catch(() => {
+        setRecommendations([]);
+        setIsRecommendLoading(false);
+      });
   }, [isAuthenticated, hasProfile]);
 
   return (
@@ -44,26 +151,32 @@ export default function CatalogPage() {
       <AppNavbar />
 
       <div className="max-w-6xl mx-auto px-6 pt-28 pb-20">
-        {/* AI Recommendation Strip */}
-        {isAuthenticated && hasProfile && recommendations.length > 0 && (
-          <section className="mb-12">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#F5D0DD] to-[#E6DDF8] flex items-center justify-center text-base">
-                🧠
+        {/* AI Recommendation Strip / Loading Animation */}
+        {isAuthenticated && hasProfile && isRecommendLoading ? (
+          <CbrLoadingAnimation />
+        ) : (
+          isAuthenticated &&
+          hasProfile &&
+          recommendations.length > 0 && (
+            <section className="mb-12">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#F5D0DD] to-[#E6DDF8] flex items-center justify-center text-base">
+                  🧠
+                </div>
+                <div>
+                  <h2 className="font-extrabold text-[#111] text-lg">Rekomendasi AI Untukmu</h2>
+                  <p className="text-xs text-gray-500 font-medium">
+                    Berdasarkan profil kulit & riwayat alergimu
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-extrabold text-[#111] text-lg">Rekomendasi AI Untukmu</h2>
-                <p className="text-xs text-gray-500 font-medium">
-                  Berdasarkan profil kulit & riwayat alergimu
-                </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {recommendations.slice(0, 4).map((p) => (
+                  <ProductCard key={p.id} product={p} highlighted />
+                ))}
               </div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {recommendations.slice(0, 4).map((p) => (
-                <ProductCard key={p.id} product={p} highlighted />
-              ))}
-            </div>
-          </section>
+            </section>
+          )
         )}
 
         {/* Login Banner (not logged in) */}
