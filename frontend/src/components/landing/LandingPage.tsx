@@ -2,12 +2,24 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const fadeUp = (delay = 0) => ({
   hidden: { opacity: 0, y: 35 },
   visible: { opacity: 1, y: 0, transition: { delay, duration: 0.7, ease } },
 });
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(true); // Default true buat SSR
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    handleResize(); // Cek saat pertama load
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return isDesktop;
+}
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
@@ -93,44 +105,44 @@ function FloatingCard({
     </motion.div>
   );
 }
-
-// ── Hero ──────────────────────────────────────────────────────────────────────
 function HeroSection() {
+  const isDesktop = useIsDesktop(); // Pakai hook di sini
   return (
     <section className="min-h-screen flex items-center justify-center px-6 pt-28 pb-20 relative overflow-hidden">
       <div className="max-w-6xl w-full mx-auto relative">
-        {/* Floating Cards — Desktop Only */}
-        <div className="hidden lg:block absolute inset-0 pointer-events-none">
-          <FloatingCard
-            emoji="🌸"
-            name="Niacinamide Toner"
-            category="Toner"
-            rotate={-10}
-            yAnim={[0, -22, 0]}
-            delay={0.4}
-            className="w-44 top-8 left-4"
-          />
-          <FloatingCard
-            emoji="💧"
-            name="Ceramide Serum"
-            category="Serum"
-            rotate={7}
-            yAnim={[0, 18, 0]}
-            delay={0.6}
-            className="w-40 bottom-8 right-4"
-          />
-          <FloatingCard
-            emoji="☀️"
-            name="SPF 50+ Sunscreen"
-            category="Sunscreen"
-            rotate={-5}
-            yAnim={[0, -15, 0]}
-            delay={0.8}
-            className="w-36 top-1/2 -translate-y-1/2 right-20"
-          />
-        </div>
-
-        {/* Content */}
+        {/* 🔥 OPTIMASI: Hanya RENDER Floating Cards kalau layar Desktop, jangan cuma disembunyiin CSS */}
+        {isDesktop && (
+          <div className="absolute inset-0 pointer-events-none">
+            <FloatingCard
+              emoji="🌸"
+              name="Niacinamide Toner"
+              category="Toner"
+              rotate={-10}
+              yAnim={[0, -22, 0]}
+              delay={0.4}
+              className="w-44 top-8 left-4"
+            />
+            <FloatingCard
+              emoji="💧"
+              name="Ceramide Serum"
+              category="Serum"
+              rotate={7}
+              yAnim={[0, 18, 0]}
+              delay={0.6}
+              className="w-40 bottom-8 right-4"
+            />
+            <FloatingCard
+              emoji="☀️"
+              name="SPF 50+ Sunscreen"
+              category="Sunscreen"
+              rotate={-5}
+              yAnim={[0, -15, 0]}
+              delay={0.8}
+              className="w-36 top-1/2 -translate-y-1/2 right-20"
+            />
+          </div>
+        )}
+        {/* Content... (Sisanya sama seperti sebelumnya tetap berada di sini) */}
         <div className="text-center max-w-3xl mx-auto">
           {/* Badge */}
           <motion.div
@@ -142,8 +154,6 @@ function HeroSection() {
             <span className="w-2 h-2 rounded-full bg-[#e8779b] animate-pulse" />
             Didukung AI Case-Based Reasoning
           </motion.div>
-
-          {/* Headline */}
           <motion.h1
             variants={fadeUp(0.3)}
             initial="hidden"
@@ -159,8 +169,6 @@ function HeroSection() {
               Bukan Kebetulan.
             </span>
           </motion.h1>
-
-          {/* Subtext */}
           <motion.p
             variants={fadeUp(0.4)}
             initial="hidden"
@@ -170,8 +178,6 @@ function HeroSection() {
             Kyra menganalisis profil kulitmu—usia, jenis kulit, riwayat alergi—lalu merekomendasikan{" "}
             <em>skincare</em> yang benar-benar cocok, bukan sekadar iklan.
           </motion.p>
-
-          {/* CTAs */}
           <motion.div
             variants={fadeUp(0.5)}
             initial="hidden"
@@ -191,8 +197,6 @@ function HeroSection() {
               Lihat Katalog
             </Link>
           </motion.div>
-
-          {/* Micro proof */}
           <motion.p
             variants={fadeUp(0.6)}
             initial="hidden"
