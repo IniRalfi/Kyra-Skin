@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user") // 'admin' atau 'user'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile      UserProfile?
+  orders       Order[]
+  allergyCases AllergyCase[]
+}
+
+model UserProfile {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  age        Int
+  gender     Int      // 1: Pria, 2: Wanita
+  skinType   Int      // 1: Kering, 2: Berminyak, 3: Sensitif, 4: Kombinasi, 5: Normal
+  concerns   Json     // e.g. ["jerawat", "kusam"]
+  allergies  Json?    // e.g. ["fragrance", "alcohol"]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  name         String
+  category     String   
+  price        Float
+  description  String?
+  image        String?
+  ingredients  Json     // ['niacinamide', 'ceramide']
+  suitableFor  Json     // [1, 5] (Skin Types)
+  isActive     Boolean  @default(true)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orderItems   OrderItem[]
+  allergyCases AllergyCase[]
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  totalAmount Float
+  status      String   @default("completed") // pending, completed, cancelled
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  quantity  Int
+  price     Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AllergyCase {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  reaction    String
+  severity    Int      // 1: Ringan, 2: Sedang, 3: Parah
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

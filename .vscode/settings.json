@@ -1,0 +1,15 @@
+{
+  "material-icon-theme.folders.associations": {
+    "backend-ai": "robot", // Folder AI dikasih icon robot/otak
+    "backend-web": "server", // Folder Laravel dikasih icon server
+    "frontend": "client", // Folder Next.js dikasih icon client/monitor
+    "database": "database", // Contoh lain kalau nanti ada folder database
+    "docs": "docs" // Untuk nyimpan Master Plan Kyra tadi
+  },
+
+  // Bonus: Bisa custom icon file juga lho!
+  "material-icon-theme.files.associations": {
+    "docker-compose.yml": "docker",
+    "main.py": "python"
+  }
+}

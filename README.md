@@ -1,43 +1,36 @@
-# 🌸 Kyra: Smart Skincare E-Commerce
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-> _Hyper-Personalized Skincare Recommendations powered by Artificial Intelligence._
+## Getting Started
 
-**Kyra** adalah platform e-commerce kecantikan modern yang tidak hanya menjual produk, tetapi bertindak sebagai konsultan kulit cerdas. Menggunakan pendekatan _Case-Based Reasoning (CBR)_ dan algoritma _K-Nearest Neighbors (KNN)_, Kyra menganalisis profil kulit, usia, dan riwayat alergi pengguna untuk memberikan rekomendasi _skincare_ yang paling aman dan terbukti efektif.
-
-Dibungkus dengan antarmuka **Aurora UI** dan efek _Glassmorphism_ yang menenangkan, Kyra memberikan pengalaman belanja premium yang mulus dan estetis.
-
----
-
-## 🛠️ Tech Stack & Arsitektur
-
-Proyek ini dibangun dengan arsitektur **Microservices** di dalam sebuah **Monorepo** yang diorkestrasi oleh **Bun**.
-
-- **Frontend:** Next.js (App Router), Tailwind CSS v4, Framer Motion
-- **Backend Web (API Gateway):** Laravel 11 (PHP 8+)
-- **Backend AI (Inference Engine):** FastAPI (Python 3+), Scikit-Learn
-- **Database:** Supabase (PostgreSQL)
-
----
-
-## 📚 Dokumentasi Lengkap (Wiki)
-
-Untuk menjaga struktur proyek tetap bersih dan modular, seluruh dokumentasi teknis, panduan, dan rancangan sistem telah dipisahkan ke dalam direktori `docs/`. Silakan klik tautan di bawah ini untuk membaca detail spesifik dari setiap bagian:
-
-1. **[🏛️ Arsitektur Sistem & Logika AI](docs/architecture.md)** _(Penjelasan topologi microservices, komunikasi antar-layer, dan siklus 4R pada sistem pakar)_
-2. **[🎨 Panduan UI/UX & Design System](docs/ui-ux.md)** _(Aturan palet warna pastel, tipografi Plus Jakarta Sans & Calming, serta referensi Aurora UI)_
-3. **[🗄️ Skema Database (Supabase)](docs/database.md)** _(ERD, rancangan tabel profil user, produk, dan riwayat alergi / knowledge base AI)_
-4. **[🗺️ Rancangan Sistem, Fitur, & Roadmap](docs/features-roadmap.md)** _(Alur kerja pengguna dari awal hingga akhir, daftar fitur per-service, dan To-Do List pengembangan)_
-5. **[💻 Panduan Setup Lokal (Local Development)](docs/setup-local.md)** _(Cara instalasi environment, dependencies, dan menjalankan 3 server sekaligus dengan satu command)_
-6. **[🚀 Panduan Deployment (Serverless Cloud)](docs/deployment.md)** _(Cara deploy Next.js ke Vercel, FastAPI ke Render, dan Laravel ke Railway)_
-
----
-
-## 🚀 Quick Start (Menjalankan Proyek)
-
-Jika Anda ingin langsung mencoba menjalankan proyek ini di komputer lokal, pastikan Anda telah membaca **[Panduan Setup Lokal](docs/setup-local.md)** untuk mengatur file `.env` dan _virtual environment_ Python.
-
-Jika semua _setup_ sudah selesai, jalankan perintah sakti ini di _root_ direktori:
+First, run the development server:
 
 ```bash
-bun run dev
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
