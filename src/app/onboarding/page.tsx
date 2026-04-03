@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -39,7 +39,13 @@ function StepDots({ current, total }: { current: number; total: number }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const router = useRouter();
-  const { refreshUser } = useAuth();
+  const { user, isReady, refreshUser } = useAuth();
+
+  useEffect(() => {
+    if (isReady && user?.role === "admin") {
+      router.push("/admin/products");
+    }
+  }, [user, isReady, router]);
 
   const [step, setStep] = useState(0); // 0, 1, 2
   const [form, setForm] = useState({

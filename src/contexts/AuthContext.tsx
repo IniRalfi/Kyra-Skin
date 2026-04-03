@@ -26,8 +26,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   hasProfile: boolean;
   isReady: boolean; // <--- Flag indikator proses Loading internal kita
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, pass: string, confirm: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, pass: string, confirm: string) => Promise<User>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -44,13 +44,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const savedToken = localStorage.getItem("kyra_token");
     const savedUser = localStorage.getItem("kyra_user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
+    const initAuth = async () => {
+      if (savedToken && savedUser) {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
 
-    // Status pengecekan token beres, app siap berlayar!
-    setIsReady(true);
+        // Verifikasi ke server biar session tetap fresh
+        try {
+          const freshUser = await api.get<User>("/me");
+          setUser(freshUser);
+          localStorage.setItem("kyra_user", JSON.stringify(freshUser));
+        } catch (err) {
+          // Kalau tokennya busuk/expire di server, baru logout paksa
+          console.error("Session expired/invalid:", err);
+          localStorage.removeItem("kyra_token");
+          localStorage.removeItem("kyra_user");
+          setToken(null);
+          setUser(null);
+        }
+      }
+      setIsReady(true);
+    };
+
+    initAuth();
   }, []);
 
   const saveSession = (newToken: string, newUser: User) => {
@@ -70,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     const data = await api.post<{ token: string; user: User }>("/login", { email, password });
     saveSession(data.token, data.user);
+    return data.user;
   };
 
   const register = async (
@@ -85,6 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password_confirmation,
     });
     saveSession(data.token, data.user);
+    return data.user;
   };
 
   const logout = async () => {

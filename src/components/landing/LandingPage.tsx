@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 import logoImage from "../../../assets/logo.png";
 
@@ -26,6 +27,8 @@ function useIsDesktop() {
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
+  const { isAuthenticated, user, logout } = useAuth();
+
   return (
     <motion.nav
       initial={{ y: -60, opacity: 0 }}
@@ -48,28 +51,55 @@ function Navbar() {
 
         {/* MENU TENGAH */}
         <div className="hidden md:flex items-center gap-8 text-[13px] font-bold text-gray-500 uppercase tracking-wider">
+          <Link href="/catalog" className="hover:text-[#111] transition-colors">
+            Katalog
+          </Link>
+          {isAuthenticated && user?.role === "admin" && (
+            <Link
+              href="/admin/products"
+              className="text-[#e8779b] hover:text-pink-600 transition-colors font-black"
+            >
+              🛡️ Admin CMS
+            </Link>
+          )}
           <a href="#features" className="hover:text-[#111] transition-colors">
             Fitur
-          </a>
-          <a href="#how-it-works" className="hover:text-[#111] transition-colors">
-            Cara Kerja
           </a>
         </div>
 
         {/* AUTH BUTTONS */}
         <div className="flex items-center gap-2 pr-1">
-          <Link
-            href="/login"
-            className="text-sm font-bold text-gray-600 hover:text-[#111] transition-colors px-5 py-2.5 rounded-full hover:bg-gray-100/50"
-          >
-            Masuk
-          </Link>
-          <Link
-            href="/register"
-            className="bg-[#111] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-black transition-all active:scale-95 shadow-md hover:shadow-xl hover:shadow-black/10"
-          >
-            Coba Gratis
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/catalog"
+                className="text-sm font-bold text-gray-600 hover:text-[#111] transition-colors px-5 py-2.5 rounded-full hover:bg-gray-100/50"
+              >
+                Ke Katalog ✨
+              </Link>
+              <button
+                onClick={() => logout()}
+                className="bg-[#111] text-white text-[11px] font-black px-6 py-3 rounded-full hover:bg-black transition-all active:scale-95 shadow-md uppercase tracking-widest"
+              >
+                Keluar
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-bold text-gray-600 hover:text-[#111] transition-colors px-5 py-2.5 rounded-full hover:bg-gray-100/50"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                className="bg-[#111] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-black transition-all active:scale-95 shadow-md hover:shadow-xl hover:shadow-black/10"
+              >
+                Daftar
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </motion.nav>

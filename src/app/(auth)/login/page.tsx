@@ -23,9 +23,13 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await login(email, password);
-      // Redirect: kalau belum isi profil → onboarding, kalau sudah → catalog
-      router.push(hasProfile ? "/catalog" : "/onboarding");
+      const user = await login(email, password);
+      // Redirect: Admin langsung ke CMS, User dicek profilnya
+      if (user.role === "admin") {
+        router.push("/admin/products");
+      } else {
+        router.push(user.profile ? "/catalog" : "/onboarding");
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Email atau password salah.");
     } finally {

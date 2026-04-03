@@ -80,6 +80,21 @@ export default function CatalogPage() {
     }
   }, [isAuthenticated]);
 
+  const addToCart = (product: Product) => {
+    const cart = JSON.parse(localStorage.getItem("kyra_cart") || "[]");
+    const existing = cart.find((i: any) => i.id === product.id);
+
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem("kyra_cart", JSON.stringify(cart));
+    // Trigger event supaya Navbar sadar ada perubahan
+    window.dispatchEvent(new Event("storage"));
+  };
+
   return (
     <div className="min-h-screen relative z-10">
       <AppNavbar />
@@ -111,7 +126,7 @@ export default function CatalogPage() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {recommendations.slice(0, 4).map((p) => (
-                  <ProductItem key={p.id} product={p} isAi />
+                  <ProductItem key={p.id} product={p} isAi onAdd={() => addToCart(p)} />
                 ))}
               </div>
               <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#f5d0dd] to-transparent mt-16 opacity-50" />
@@ -134,7 +149,7 @@ export default function CatalogPage() {
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {products.map((p) => (
-                <ProductItem key={p.id} product={p} />
+                <ProductItem key={p.id} product={p} onAdd={() => addToCart(p)} />
               ))}
             </div>
           )}
@@ -145,7 +160,23 @@ export default function CatalogPage() {
 }
 
 // Sub-Komponen Kartu Produk
-function ProductItem({ product, isAi }: { product: Product; isAi?: boolean }) {
+function ProductItem({
+  product,
+  isAi,
+  onAdd,
+}: {
+  product: Product;
+  isAi?: boolean;
+  onAdd: () => void;
+}) {
+  const [added, setAdded] = useState(false);
+
+  const handleAdd = () => {
+    onAdd();
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
   return (
     <div
       className={`group bg-white/60 backdrop-blur-xl rounded-[32px] border ${isAi ? "border-[#e8779b]/40 shadow-[0_8px_30px_rgba(232,119,155,0.1)]" : "border-white"} p-4 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500`}
@@ -194,10 +225,17 @@ function ProductItem({ product, isAi }: { product: Product; isAi?: boolean }) {
         </div>
 
         <button
+          onClick={handleAdd}
           disabled={product.stock === 0}
-          className={`w-full mt-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-lg ${product.stock > 0 ? "bg-[#111] text-white hover:bg-[#e8779b] shadow-black/5" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+          className={`w-full mt-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
+            product.stock === 0
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : added
+                ? "bg-green-500 text-white"
+                : "bg-[#111] text-white hover:bg-[#e8779b] shadow-black/5"
+          }`}
         >
-          {product.stock > 0 ? "Beli Sekarang" : "Kosong"}
+          {product.stock === 0 ? "Kosong" : added ? "Sip! Masuk Keranjang" : "Beli Sekarang"}
         </button>
       </div>
     </div>

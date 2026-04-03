@@ -29,8 +29,12 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
     try {
-      await register(form.name, form.email, form.password, form.password_confirmation);
-      router.push("/onboarding");
+      const user = await register(form.name, form.email, form.password, form.password_confirmation);
+      if (user.role === "admin") {
+        router.push("/admin/products");
+      } else {
+        router.push("/onboarding");
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Gagal mendaftar, coba lagi.");
     } finally {
