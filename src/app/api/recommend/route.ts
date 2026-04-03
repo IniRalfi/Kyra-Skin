@@ -2,33 +2,40 @@ import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
 
+// Helper anti-tembus untuk mengekstrak JSON dari database (apapun bentuknya)
+function safeParse(data: any): any[] {
+  if (Array.isArray(data)) return data;
+  if (!data) return [];
+  if (typeof data !== "string") return [data];
+
+  try {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch (err) {
+    // Jika datanya cuma asal ngetik seperti "Anu aja sih aman aja", kita paksa jadi isi Array
+    return [data];
+  }
+}
+
 // Helper K-NN (CBR) murni dalam TypeScript!
 function calculateEuclideanDistance(userProfile: any, product: any) {
   let distance = 0;
 
   // 1. Sensitivitas Skin Type (Bobot: 40%)
-  // Jika produk ini COCOK dengan skin_type si user, jarak = 0 (sangat dekat). Jika tidak cocok, jarak = 1
-  const productSuitableFor = Array.isArray(product.suitableFor)
-    ? product.suitableFor
-    : JSON.parse((product.suitableFor as any) || "[]");
+  const productSuitableFor = safeParse(product.suitableFor);
   if (!productSuitableFor.includes(userProfile.skinType)) {
     distance += 1.0 * 0.4; // Penalti karena beda tipe kulit
   }
 
   // 2. Kecocokan Skin Concern (Mencari ingredients aktif, Bobot: 60%)
-  const userConcerns = Array.isArray(userProfile.concerns)
-    ? userProfile.concerns
-    : JSON.parse((userProfile.concerns as any) || "[]");
-  const productIngredients = Array.isArray(product.ingredients)
-    ? product.ingredients
-    : JSON.parse((product.ingredients as any) || "[]");
+  const userConcerns = safeParse(userProfile.concerns);
+  const productIngredients = safeParse(product.ingredients);
 
-  // Logic Cerdas: jerawat -> Salicylic, kusam -> Vitamin C/Niacinamide, penuaan -> Retinol/Peptides
   let matchesConcern = false;
-  const ingredientsLower = productIngredients.map((i: string) => i.toLowerCase());
+  const ingredientsLower = productIngredients.map((i: string) => String(i).toLowerCase());
 
   for (const c of userConcerns) {
-    const concern = c.toLowerCase();
+    const concern = String(c).toLowerCase();
     if (
       concern.includes("jerawat") &&
       (ingredientsLower.includes("salicylic acid") || ingredientsLower.includes("tea tree extract"))
@@ -60,7 +67,7 @@ function calculateEuclideanDistance(userProfile: any, product: any) {
     distance += 1.0 * 0.6; // Penalti karena gak ada ingredient yang ngefek
   }
 
-  return Math.sqrt(distance); // Mengembalikan standar rumus Euclidean murni
+  return Math.sqrt(distance);
 }
 
 export async function GET(req: Request) {
@@ -73,25 +80,19 @@ export async function GET(req: Request) {
   }
 
   const profile = user.profile;
-  const userAllergies = Array.isArray(profile.allergies)
-    ? profile.allergies.map((a) => String(a).toLowerCase())
-    : [];
+  const userAllergies = safeParse(profile.allergies).map((a) => String(a).toLowerCase());
 
   // Panggil Semua Katalog Produk di Database
   const allProducts = await prisma.product.findMany({ where: { isActive: true } });
 
-  // 1. FILTERING: Hapus produk yang mengandung alergi bagi user ini
+  // 1. FILTERING: Otomatis buang/hindari produk yang mengandung alergi bagi user ini
   const safeProducts = allProducts.filter((p) => {
-    const ingredients = Array.isArray(p.ingredients)
-      ? p.ingredients.map((i) => String(i).toLowerCase())
-      : [];
-    // Apakah ada satu saja bahan yang termasuk alergi user? Jika ada, buang.
+    const ingredients = safeParse(p.ingredients).map((i) => String(i).toLowerCase());
     const isAllergic = ingredients.some((ing) => userAllergies.includes(ing));
     return !isAllergic;
   });
 
   // 2. K-NEAREST NEIGHBOR (CBR) SCORING
-  // Hitung kedekatan (Euclidean Distance) si user profile dengan atribut masing-masing produk
   const scoredProducts = safeProducts.map((product) => {
     const distance = calculateEuclideanDistance(profile, product);
     return {

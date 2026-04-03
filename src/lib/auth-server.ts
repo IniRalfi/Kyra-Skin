@@ -1,5 +1,5 @@
 import { verifyToken } from "@/lib/jwt";
-import { prisma } from "@/lib/db";
+import prisma from "@/lib/db";
 
 export async function getUserFromRequest(req: Request) {
   const authHeader = req.headers.get("authorization");

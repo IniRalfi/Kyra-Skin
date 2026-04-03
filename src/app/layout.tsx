@@ -21,9 +21,18 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // ... (biarkan bagian kode di atas tetap sama)
+
   return (
-    <html lang="id" className={`${plusJakarta.variable} ${calming.variable} text-[100%]`}>
-      <body className="font-jakarta antialiased text-[#111111] overflow-x-hidden min-h-screen selection:bg-[#FAD9E6]">
+    <html
+      lang="id"
+      className={`${plusJakarta.variable} ${calming.variable} text-[100%]`}
+      suppressHydrationWarning
+    >
+      <body
+        suppressHydrationWarning
+        className="font-jakarta antialiased text-[#111111] overflow-x-hidden min-h-screen selection:bg-[#FAD9E6]"
+      >
         <GlobalBackground />
         <AuthProvider>
           <div className="relative z-0">{children}</div>
