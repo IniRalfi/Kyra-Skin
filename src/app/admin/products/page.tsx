@@ -21,8 +21,6 @@ interface Product {
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Status Lemari Laci Buka Tutup Mode Edit/Tambah
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -32,7 +30,7 @@ export default function AdminProductsPage() {
     price: "",
     stock: "0",
     description: "",
-    image: "", // <-- Tambah stock
+    image: "",
     ingredientsRaw: "",
     suitableForRaw: "1,2,3,4,5",
   });
@@ -63,7 +61,6 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Pelatuk Tombol Batal Keluar Mode Edit & Delete
   const handleCancel = () => {
     setIsAdding(false);
     setEditingId(null);
@@ -71,7 +68,7 @@ export default function AdminProductsPage() {
       name: "",
       category: "Face Wash",
       price: "",
-      stock: "0", // <---- SELIPKAN PEMBERSIH STOK INI DI SINI!
+      stock: "0",
       description: "",
       image: "",
       ingredientsRaw: "",
@@ -79,7 +76,6 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Pelatuk Tombol Edit (Sedot Data Tabel menuju Atas Form)
   const handleEdit = (p: Product) => {
     setIsAdding(true);
     setEditingId(p.id);
@@ -93,11 +89,9 @@ export default function AdminProductsPage() {
       ingredientsRaw: safeStrList(p.ingredients),
       suitableForRaw: safeStrList(p.suitableFor),
     });
-    // Scroll memanjakan mata boss supaya mulus geser ke puncak panel
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Pipa Saluran Penyelamatan Form (Simpan/Timpa Data)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -122,26 +116,28 @@ export default function AdminProductsPage() {
       };
 
       if (editingId) {
-        await api.put("/admin/products", { id: editingId, ...payload }); // Jalur revisi (EDIT)
+        await api.put("/admin/products", { id: editingId, ...payload });
       } else {
-        await api.post("/admin/products", payload); // Jalur publikasi asli (ADD)
+        await api.post("/admin/products", payload);
       }
 
       handleCancel();
       fetchProducts();
     } catch (err) {
-      alert("Aduh, gagal menyimpan resep skincare ke server database.");
+      alert("Sistem gagal memperbarui data inventaris.");
     }
   };
 
   const handleDelete = async (id: number, name: string) => {
-    const wani = window.confirm(`Yakin mau menarik dan membuang permanen Skincare "${name}"?`);
+    const wani = window.confirm(
+      `Apakah Anda yakin ingin menghapus produk "${name}" secara permanen?`,
+    );
     if (wani) {
       try {
         await api.delete(`/admin/products?id=${id}`);
         fetchProducts();
       } catch (err) {
-        alert("Gagal membakar produk skincare.");
+        alert("Gagal menghapus data produk.");
       }
     }
   };
@@ -151,239 +147,237 @@ export default function AdminProductsPage() {
       <div className="flex justify-between items-center mb-10">
         <div>
           <h2 className="text-3xl font-black text-[#e8779b] tracking-tight drop-shadow-sm">
-            Katalog Skincare
+            Inventaris Produk
           </h2>
           <p className="text-gray-500 font-medium text-sm mt-1.5">
-            Meja racikan etalase dan gudang pamer senjata utamamu.
+            Kelola stok, harga, dan detail spesifikasi produk Kyra-Skin.
           </p>
         </div>
         <button
           onClick={isAdding ? handleCancel : () => setIsAdding(true)}
-          className={`px-6 py-3.5 rounded-full text-white font-extrabold text-sm shadow-xl transition-all ${isAdding ? "bg-gray-400 hover:bg-gray-500" : "bg-[#111] hover:bg-black hover:scale-105"}`}
+          className={`px-7 py-3.5 rounded-2xl text-white font-extrabold text-xs uppercase tracking-widest shadow-xl transition-all ${isAdding ? "bg-gray-400 hover:bg-gray-500" : "bg-[#111] hover:bg-black hover:scale-105"}`}
         >
-          {isAdding ? "❌ Tutup Panel Kaca" : "✨ + Tambah Skincare"}
+          {isAdding ? "✕ Batalkan" : "＋ Tambah Produk"}
         </button>
       </div>
 
       {isAdding && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white/80 border border-white p-8 rounded-[28px] mb-8 shadow-sm animate-in zoom-in-95 duration-200"
+          className="bg-white/80 border border-white p-10 rounded-[32px] mb-12 shadow-sm animate-in zoom-in-95 duration-300"
         >
-          <div className="grid grid-cols-2 gap-5 mb-6">
-            <div>
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Nama Panggilan
-              </label>
-              <input
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="space-y-6">
+              <p className="text-[10px] font-black text-[#e8779b] uppercase tracking-[0.2em] pb-2 border-b border-pink-50">
+                1. Informasi Dasar
+              </p>
+              <div>
+                <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                  Nama Produk
+                </label>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50 transition-all"
+                  placeholder="Contoh: Gentle Night Cream"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                  Kategori
+                </label>
+                <select
+                  required
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50 transition-all cursor-pointer"
+                >
+                  <option value="Face Wash">Face Wash</option>
+                  <option value="Toner">Toner</option>
+                  <option value="Serum">Serum</option>
+                  <option value="Moisturizer">Moisturizer</option>
+                  <option value="Sunscreen">Sunscreen</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                    Harga Jual (Rp)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                    Stok Tersedia
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={form.stock}
+                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50 transition-all"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                URL Gambar Sampul
-              </label>
-              <CldUploadWidget
-                uploadPreset="kyrasupreme" // Ingat, tulisan ini harus sama persis dengan nama preset Unsigned kamu di web Cloudinary!
-                onSuccess={(result: any) => {
-                  // Menerima kado link gambar asli dari awan, lalu menyedotnya ke form
-                  setForm({ ...form, image: result.info.secure_url });
-                }}
-              >
-                {({ open }) => (
-                  <button
-                    type="button"
-                    onClick={() => open()}
-                    className="w-full bg-white border-2 border-dashed border-[#f5d0dd] text-[#e8779b] rounded-xl px-4 py-3.5 text-sm font-bold text-center hover:bg-[#ffeef3] hover:border-[#e8779b] shadow-[inset_0_2px_10px_rgba(232,119,155,0.05)] transition-all"
-                  >
-                    {form.image
-                      ? "✅ File Foto Sudah Dipeluk Form (Klik Untuk Menukar Benda)"
-                      : "📸 Klik Untuk Menyisipkan File Foto Skincare"}
-                  </button>
-                )}
-              </CldUploadWidget>
+
+            <div className="space-y-6">
+              <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] pb-2 border-b border-blue-50">
+                2. Media & Detail Teknis
+              </p>
+              <div>
+                <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                  Foto Produk
+                </label>
+                <CldUploadWidget
+                  uploadPreset="kyrasupreme"
+                  onSuccess={(result: any) => setForm({ ...form, image: result.info.secure_url })}
+                >
+                  {({ open }) => (
+                    <button
+                      type="button"
+                      onClick={() => open()}
+                      className="w-full bg-gray-50 border-2 border-dashed border-gray-200 text-gray-400 rounded-2xl px-5 py-3.5 text-xs font-bold hover:bg-white hover:border-[#e8779b] hover:text-[#e8779b] transition-all"
+                    >
+                      {form.image
+                        ? "✅ Gambar Berhasil Diunggah"
+                        : "📸 Klik untuk Unggah Foto Produk"}
+                    </button>
+                  )}
+                </CldUploadWidget>
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                  Kandungan Utama (Bahan)
+                </label>
+                <input
+                  required
+                  placeholder="Niacinamide, Retinol, Ceramide..."
+                  value={form.ingredientsRaw}
+                  onChange={(e) => setForm({ ...form, ingredientsRaw: e.target.value })}
+                  className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                  Kecocokan Tipe Kulit (1-5)
+                </label>
+                <input
+                  required
+                  placeholder="1, 2, 5"
+                  value={form.suitableForRaw}
+                  onChange={(e) => setForm({ ...form, suitableForRaw: e.target.value })}
+                  className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50"
+                />
+              </div>
             </div>
-            <div>
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Kategori Kasta
-              </label>
-              <select
-                required
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50 cursor-pointer"
-              >
-                <option value="Face Wash">Face Wash</option>
-                <option value="Toner">Toner</option>
-                <option value="Serum">Serum</option>
-                <option value="Moisturizer">Moisturizer</option>
-                <option value="Sunscreen">Sunscreen</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Mahar Jual (Rp)
-              </label>
-              <input
-                type="number"
-                required
-                value={form.price}
-                onChange={(e) => setForm({ ...form, price: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Stok Gudang Fisik (Pcs)
-              </label>
-              <input
-                type="number"
-                required
-                value={form.stock}
-                onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Senjata Skincare Aktif (Pisahkan dg Koma)
-              </label>
-              <input
-                required
-                placeholder="Niacinamide, Retinol, Ekstrak Buaya"
-                value={form.ingredientsRaw}
-                onChange={(e) => setForm({ ...form, ingredientsRaw: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Kecocokan Tarung Mangsa (1:Kering, 2:Minyak, 3:Sensitif, 4:Kombinasi, 5:Normal)
-              </label>
-              <input
-                required
-                placeholder="1,2,3,4,5"
-                value={form.suitableForRaw}
-                onChange={(e) => setForm({ ...form, suitableForRaw: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Petuah Kegunaan Singkat
+
+            <div className="col-span-1 md:col-span-2">
+              <label className="text-[10px] font-black text-gray-400 mb-2 block uppercase tracking-widest">
+                Deskripsi Singkat Produk
               </label>
               <textarea
                 value={form.description}
-                rows={2}
+                rows={3}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="w-full bg-white/60 border border-[#f5d0dd] rounded-xl px-4 py-3.5 text-sm font-bold text-[#111] outline-none focus:ring-2 focus:ring-[#e8779b]/50 resize-none"
+                className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-pink-50 resize-none transition-all"
               />
             </div>
           </div>
           <button
             type="submit"
-            className="bg-[#e8779b] text-white px-6 py-4 rounded-xl font-extrabold text-sm w-full hover:bg-pink-500 transition-all shadow-lg shadow-pink-200 active:scale-[0.99] uppercase tracking-widest"
+            className="bg-[#111] text-white px-8 py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] w-full hover:bg-[#e8779b] transition-all shadow-2xl active:scale-95"
           >
-            {editingId ? "✨ Selesai Merevisi Skincare" : "🚀 Simpan & Luncurkan Etalase"}
+            {editingId ? "Simpan Perubahan Produk" : "Terbitkan Produk Baru"}
           </button>
         </form>
       )}
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <p className="text-[#e8779b] font-bold tracking-widest uppercase text-sm animate-pulse">
-            Memeriksa tumpukan stok brankas...
+        <div className="flex flex-col justify-center items-center py-20 opacity-30">
+          <div className="w-10 h-10 border-4 border-[#e8779b] border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="font-black text-[10px] tracking-[0.3em] uppercase text-[#e8779b]">
+            Sinkronisasi Stok...
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-white">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+        <div className="overflow-x-auto rounded-3xl border border-white">
+          <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
-              <tr className="border-b-2 border-[#f5d0dd]">
-                <th className="pb-4 px-3 text-xs font-extrabold uppercase tracking-widest text-[#e8779b]/60 w-16">
-                  Wujud
+              <tr className="border-b border-gray-100">
+                <th className="pb-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 w-24">
+                  Foto
                 </th>
-                <th className="pb-4 px-3 text-xs font-extrabold uppercase tracking-widest text-[#e8779b]/60">
-                  ID Panggil
+                <th className="pb-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">
+                  Produk
                 </th>
-                <th className="pb-4 px-3 text-xs font-extrabold uppercase tracking-widest text-[#e8779b]/60">
-                  Nilai Jual
+                <th className="pb-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">
+                  Harga & Stok
                 </th>
-                <th className="pb-4 px-3 text-xs font-extrabold uppercase tracking-widest text-[#e8779b]/60">
-                  Ramuan Esensial Khusus
+                <th className="pb-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">
+                  Principal Ingredients
                 </th>
-                <th className="pb-4 px-3 text-xs font-extrabold uppercase tracking-widest text-[#e8779b]/60 text-right">
-                  Modifikasi Paksa
+                <th className="pb-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 text-right">
+                  Tindakan
                 </th>
               </tr>
             </thead>
-            <tbody className="text-sm font-extrabold text-[#111] divide-y divide-[#f5d0dd]/30">
+            <tbody className="text-sm font-bold text-[#111] divide-y divide-gray-50">
               {products.map((p) => (
-                <tr key={p.id} className="hover:bg-white/40 transition-colors group">
-                  <td className="py-5 px-3">
-                    {p.image ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <div className="relative w-14 h-14">
-                        <Image
-                          src={p.image}
-                          alt={p.name}
-                          fill
-                          sizes="56px"
-                          className="object-cover rounded-xl border border-[#f5d0dd] shadow-[0_2px_10px_rgba(232,119,155,0.1)] transform group-hover:scale-105 transition-all"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-14 h-14 rounded-xl bg-[#f5d0dd]/40 flex items-center justify-center text-xl shadow-inner">
-                        🧴
-                      </div>
-                    )}
+                <tr key={p.id} className="hover:bg-white/40 transition-all group">
+                  <td className="py-6 px-4">
+                    <div className="relative w-16 h-16">
+                      <Image
+                        src={p.image || "/placeholder.jpg"}
+                        alt={p.name}
+                        fill
+                        sizes="64px"
+                        className="object-cover rounded-2xl border border-white shadow-sm"
+                      />
+                    </div>
                   </td>
-                  <td className="py-5 px-3">
-                    <p className="text-base">{p.name}</p>
-                    <p className="text-[10px] text-[#e8779b] font-black uppercase tracking-widest mt-1.5 bg-white px-2.5 py-1 rounded-md inline-block border border-[#f5d0dd]/50 shadow-[0_2px_4px_rgba(232,119,155,0.05)]">
+                  <td className="py-6 px-4">
+                    <p className="font-black text-[#111] text-base tracking-tight">{p.name}</p>
+                    <span className="text-[9px] font-black text-[#e8779b] uppercase tracking-widest mt-1 bg-white px-2 py-0.5 rounded border border-pink-50 inline-block">
                       {p.category}
+                    </span>
+                  </td>
+                  <td className="py-6 px-4">
+                    <p className="font-black text-[#111]">Rp {p.price.toLocaleString("id-ID")}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                      Stok: {p.stock} Unit
                     </p>
                   </td>
-                  <td className="py-5 px-3 text-base">
-                    <p className="text-[#e8779b] font-black tracking-tight">
-                      Rp {p.price.toLocaleString("id-ID")}
-                    </p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 hover:text-[#e8779b]">
-                      Sisa Stok: {p.stock} Pcs
-                    </p>
-                  </td>
-                  <td className="py-5 px-3">
-                    <p className="max-w-[250px] truncate font-medium text-xs text-gray-500 leading-relaxed border border-[#f5d0dd]/50 bg-white/50 rounded-lg p-2 inline-block">
+                  <td className="py-6 px-4">
+                    <p className="max-w-[200px] truncate font-medium text-xs text-gray-400 bg-gray-50/50 px-3 py-1.5 rounded-lg inline-block border border-gray-50 italic">
                       {safeStrList(p.ingredients)}
                     </p>
                   </td>
-                  <td className="py-5 px-3 text-right whitespace-nowrap">
+                  <td className="py-6 px-4 text-right whitespace-nowrap space-x-2">
                     <button
                       onClick={() => handleEdit(p)}
-                      className="px-4 py-2.5 mr-2 bg-white text-[#5c8bdf] border border-blue-100 rounded-xl hover:bg-[#5c8bdf] hover:text-white transition-all shadow-sm active:scale-95"
+                      className="px-5 py-3 bg-white text-black border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all text-[10px] font-black uppercase tracking-widest shadow-sm"
                     >
-                      ✏️ Edit
+                      Ubah
                     </button>
                     <button
                       onClick={() => handleDelete(p.id, p.name)}
-                      className="px-4 py-2.5 bg-white text-red-500 border border-red-100 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-95"
+                      className="px-5 py-3 bg-white text-red-400 border border-red-50 rounded-2xl hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest shadow-sm"
                     >
-                      🗑️ Hapus
+                      Hapus
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          {products.length === 0 && (
-            <p className="text-center py-16 font-bold text-gray-400">
-              Etalasemu masih sekosong debu.
-            </p>
-          )}
         </div>
       )}
     </div>

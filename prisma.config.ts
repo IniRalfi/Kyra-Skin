@@ -7,4 +7,7 @@ export default defineConfig({
     // Jika Vercel lupa ngasih link saat fase build, kita sumpal dengan dummy asalkan format uri nya valid.
     url: process.env.DIRECT_URL || "postgresql://dummy:pass@localhost:5432/dummy",
   },
+  migrations: {
+    seed: "node ./prisma/seed.js",
+  },
 });

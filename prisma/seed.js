@@ -1,100 +1,128 @@
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding Database dengan Produk Kyra...");
+  console.log("♻️  Resetting Data...");
+  // Hapus data lama biar gak duplikat (Opsional, tapi aman buat seeder)
+  await prisma.user.deleteMany({ where: { role: "user" } });
+  await prisma.product.deleteMany({});
 
+  console.log("📦 Seeding Produk...");
   const products = [
     {
       name: "Toner Niacinamide Glowing",
       category: "Toner",
       price: 120000,
       description: "Toner menyegarkan dengan Niacinamide 5%.",
-      ingredients: ["Aqua", "Niacinamide", "Glycerin", "Panthenol"],
+      ingredients: ["Aqua", "Niacinamide", "Glycerin"],
       suitableFor: [2, 4, 5],
+      stock: 50,
     },
     {
-      name: "Serum Ceramide Skin Barrier",
+      name: "Serum Ceramide Skin",
       category: "Serum",
       price: 155000,
-      description: "Serum untuk memperbaiki skin barrier yang rusak.",
-      ingredients: ["Aqua", "Ceramide NP", "Hyaluronic Acid", "Centella Asiatica"],
+      description: "Memperbaiki skin barrier.",
+      ingredients: ["Aqua", "Ceramide NP", "Hyaluronic Acid"],
       suitableFor: [1, 3, 5],
+      stock: 30,
     },
     {
       name: "Gentle Low pH Cleanser",
       category: "Cleanser",
       price: 85000,
-      description: "Pembersih wajah super lembut dengan pH seimbang.",
-      ingredients: ["Aqua", "Cocamidopropyl Betaine", "Glycerin", "Sodium Hyaluronate"],
+      description: "Pembersih wajah pH seimbang.",
+      ingredients: ["Aqua", "Cocamidopropyl Betaine"],
       suitableFor: [1, 2, 3, 4, 5],
+      stock: 100,
     },
     {
-      name: "Salicylic Acid Acne Spot",
-      category: "Serum",
-      price: 95000,
-      description: "Obat totol jerawat ampuh dengan BHA.",
-      ingredients: ["Aqua", "Salicylic Acid", "Alcohol", "Tea Tree Extract"],
-      suitableFor: [2, 4],
-    },
-    {
-      name: "SPF 50+ PA++++ Sunscreen",
+      name: "SPF 50+ Sunscreen",
       category: "Sunscreen",
       price: 130000,
-      description: "Tabir surya ringan tanpa whitecast.",
-      ingredients: ["Aqua", "Zinc Oxide", "Titanium Dioxide", "Aloe Vera"],
+      description: "Tabir surya tanpa whitecast.",
+      ingredients: ["Aqua", "Zinc Oxide"],
       suitableFor: [1, 2, 3, 4, 5],
+      stock: 75,
     },
     {
       name: "Retinol 1% Anti-Aging",
       category: "Serum",
       price: 180000,
-      description: "Serum anti-penuaan dengan Retinol murni.",
-      ingredients: ["Aqua", "Retinol", "Squalane", "Vitamin E"],
+      description: "Serum anti-penuaan dini.",
+      ingredients: ["Aqua", "Retinol", "Squalane"],
       suitableFor: [1, 5],
-    },
-    {
-      name: "Peptide Moisturizer Cream",
-      category: "Moisturizer",
-      price: 145000,
-      description: "Krim pelembap kaya peptide untuk kulit kenyal.",
-      ingredients: ["Aqua", "Peptides", "Ceramide EOP", "Dimethicone"],
-      suitableFor: [1, 3, 4, 5],
-    },
-    {
-      name: "Vitamin C Brightening Drops",
-      category: "Serum",
-      price: 165000,
-      description: "Menghilangkan flek hitam dan mencerahkan.",
-      ingredients: ["Aqua", "Ascorbic Acid", "Ferulic Acid", "Tocopherol"],
-      suitableFor: [2, 4, 5],
-    },
-    {
-      name: "Mugwort Calming Clay Mask",
-      category: "Mask",
-      price: 110000,
-      description: "Masker mugwort untuk meredakan kemerahan.",
-      ingredients: ["Kaolin", "Aqua", "Mugwort Extract", "Glycerin"],
-      suitableFor: [2, 3, 4],
-    },
-    {
-      name: "Galactomyces Essence",
-      category: "Toner",
-      price: 190000,
-      description: "Essence fermentasi tingkat tinggi untuk mencerahkan.",
-      ingredients: ["Galactomyces Ferment Filtrate", "Niacinamide", "Allantoin"],
-      suitableFor: [1, 2, 4, 5],
+      stock: 20,
     },
   ];
 
   for (const p of products) {
-    await prisma.product.create({
-      data: p,
+    await prisma.product.create({ data: p });
+  }
+
+  console.log("👥 Seeding 30 User dengan Profil Beragam...");
+  const hashedUserPassword = await bcrypt.hash("user1234", 10);
+
+  const names = [
+    "Budi Santoso",
+    "Siti Aminah",
+    "Asep Sunandar",
+    "Dewi Lestari",
+    "Rizky Ramadhan",
+    "Putri Handayani",
+    "Aditya Wijaya",
+    "Lina Marlina",
+    "Fajar Nugraha",
+    "Anisa Fitri",
+    "Irfan Bachdim",
+    "Maya Prasetyo",
+    "Bambang Pamungkas",
+    "Eka Kusuma",
+    "Yoga Pratama",
+    "Rina Nose",
+    "Gading Marten",
+    "Nagita Slavina",
+    "Raffi Ahmad",
+    "Deddy Corbuzier",
+    "Agnez Mo",
+    "Tulus",
+    "Raisa Andriana",
+    "Isyana Sarasvati",
+    "Vidi Aldiano",
+    "Bunga Citra Lestari",
+    "Gisella Anastasia",
+    "Jessica Iskandar",
+    "Nia Ramadhani",
+    "Luna Maya",
+  ];
+
+  for (let i = 0; i < names.length; i++) {
+    const skinType = (i % 5) + 1; // 1-5
+    const gender = (i % 2) + 1; // 1: Pria, 2: Wanita
+    const age = 18 + (i % 40);
+
+    await prisma.user.create({
+      data: {
+        name: names[i],
+        email: `user${i + 1}@kyra.com`,
+        password: hashedUserPassword,
+        role: "user",
+        profile: {
+          create: {
+            age: age,
+            gender: gender,
+            skinType: skinType,
+            concerns: ["kusam", "jerawat"],
+            allergies: i % 3 === 0 ? ["alcohol"] : [],
+          },
+        },
+      },
     });
   }
 
-  console.log("✅ Berhasil nge-seed 10 produk!");
+  console.log("✅ Berhasil nge-seed 30 User & 5 Produk!");
 }
 
 main()
