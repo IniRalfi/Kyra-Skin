@@ -21,11 +21,10 @@ export function AppNavbar() {
     };
     sync();
     window.addEventListener("storage", sync);
-    // Poll setiap 1 detik biar count update real-time
-    const interval = setInterval(sync, 1000);
+    window.addEventListener("cart-update", sync);
     return () => {
       window.removeEventListener("storage", sync);
-      clearInterval(interval);
+      window.removeEventListener("cart-update", sync);
     };
   }, []);
 

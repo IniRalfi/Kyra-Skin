@@ -7,19 +7,19 @@ export default function GlobalBackground() {
     <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#fcfbfc] overflow-hidden">
       {/* 🔴 Aurora Blobs Layer */}
       <motion.div
-        className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-[#ff8cb8] rounded-full mix-blend-multiply filter blur-[100px] md:blur-[140px] opacity-40"
-        animate={{ scale: [1, 1.1, 1], rotate: [0, 90, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-[#ff8cb8] rounded-full mix-blend-multiply filter blur-[70px] md:blur-[80px] opacity-20 will-change-transform"
+        animate={{ scale: [1, 1.05, 1], rotate: [0, 45, 0] }}
+        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
       />
       <motion.div
-        className="absolute top-[30%] left-[-10%] w-[350px] h-[350px] md:w-[600px] md:h-[600px] bg-[#d2dcff] rounded-full mix-blend-multiply filter blur-[100px] md:blur-[150px] opacity-50"
-        animate={{ scale: [1, 1.2, 1], translateY: [0, 50, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[30%] left-[-10%] w-[350px] h-[350px] md:w-[600px] md:h-[600px] bg-[#d2dcff] rounded-full mix-blend-multiply filter blur-[70px] md:blur-[90px] opacity-30 will-change-transform"
+        animate={{ scale: [1, 1.1, 1], translateY: [0, 30, 0] }}
+        transition={{ duration: 35, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-[-10%] left-[20%] md:left-[30%] w-[400px] h-[400px] md:w-[800px] md:h-[800px] bg-[#ff8cb8] rounded-full mix-blend-multiply filter blur-[100px] md:blur-[160px] opacity-30"
-        animate={{ scale: [1, 1.05, 1], translateX: [0, -50, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[-10%] left-[20%] md:left-[30%] w-[400px] h-[400px] md:w-[800px] md:h-[800px] bg-[#ff8cb8] rounded-full mix-blend-multiply filter blur-[70px] md:blur-[100px] opacity-15 will-change-transform"
+        animate={{ scale: [1, 1.02, 1], translateX: [0, -30, 0] }}
+        transition={{ duration: 45, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* 🔴 Titik-Titik Aesthetic */}

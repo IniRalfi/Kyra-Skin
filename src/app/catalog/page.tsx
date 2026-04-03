@@ -91,8 +91,8 @@ export default function CatalogPage() {
     }
 
     localStorage.setItem("kyra_cart", JSON.stringify(cart));
-    // Trigger event supaya Navbar sadar ada perubahan
-    window.dispatchEvent(new Event("storage"));
+    // Trigger custom event supaya Navbar sadar ada perubahan (Instan & Ringan)
+    window.dispatchEvent(new Event("cart-update"));
   };
 
   return (
@@ -179,7 +179,7 @@ function ProductItem({
 
   return (
     <div
-      className={`group bg-white/60 backdrop-blur-xl rounded-[32px] border ${isAi ? "border-[#e8779b]/40 shadow-[0_8px_30px_rgba(232,119,155,0.1)]" : "border-white"} p-4 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500`}
+      className={`group bg-white/70 backdrop-blur-md rounded-[32px] border ${isAi ? "border-[#e8779b]/40 shadow-[0_8px_30px_rgba(232,119,155,0.1)]" : "border-white/80"} p-4 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 will-change-transform`}
     >
       <div className="relative aspect-square rounded-[24px] overflow-hidden mb-5 bg-[#fdf2f5]">
         {product.image ? (
