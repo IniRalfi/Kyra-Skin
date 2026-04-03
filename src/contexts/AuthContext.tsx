@@ -7,8 +7,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 interface UserProfile {
   age: number;
   gender: number;
-  skinType: number; // <-- Ubah menjadi camelCase alias pakai 'T' besar agar sama persis dengan Prisma!
-  concerns?: any; // (Boleh ubah jadi 'concerns' dari sebelumnya 'skin_concerns' kalau mau presisi juga)
+  skinType: number;
+  concerns?: any;
   allergies?: any;
 }
 
@@ -25,13 +25,9 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   hasProfile: boolean;
+  isReady: boolean; // <--- Flag indikator proses Loading internal kita
   login: (email: string, password: string) => Promise<void>;
-  register: (
-    name: string,
-    email: string,
-    password: string,
-    password_confirmation: string,
-  ) => Promise<void>;
+  register: (name: string, email: string, pass: string, confirm: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -42,8 +38,8 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false); // Default belum dicek
 
-  // Restore session dari localStorage saat app pertama load
   useEffect(() => {
     const savedToken = localStorage.getItem("kyra_token");
     const savedUser = localStorage.getItem("kyra_user");
@@ -52,6 +48,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
     }
+
+    // Status pengecekan token beres, app siap berlayar!
+    setIsReady(true);
   }, []);
 
   const saveSession = (newToken: string, newUser: User) => {
@@ -113,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         token,
         isAuthenticated: !!token,
         hasProfile: !!user?.profile,
+        isReady,
         login,
         register,
         logout,
