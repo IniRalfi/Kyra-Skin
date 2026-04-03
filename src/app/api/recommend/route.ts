@@ -2,110 +2,100 @@ import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
 
-// Helper anti-tembus untuk mengekstrak JSON dari database (apapun bentuknya)
+// Helper untuk mengekstrak JSON dari database
 function safeParse(data: any): any[] {
   if (Array.isArray(data)) return data;
   if (!data) return [];
   if (typeof data !== "string") return [data];
-
   try {
     const parsed = JSON.parse(data);
     return Array.isArray(parsed) ? parsed : [parsed];
   } catch (err) {
-    // Jika datanya cuma asal ngetik seperti "Anu aja sih aman aja", kita paksa jadi isi Array
     return [data];
   }
 }
 
-// Helper K-NN (CBR) murni dalam TypeScript!
-function calculateEuclideanDistance(userProfile: any, product: any) {
-  let distance = 0;
-
-  // 1. Sensitivitas Skin Type (Bobot: 40%)
-  const productSuitableFor = safeParse(product.suitableFor);
-  if (!productSuitableFor.includes(userProfile.skinType)) {
-    distance += 1.0 * 0.4; // Penalti karena beda tipe kulit
-  }
-
-  // 2. Kecocokan Skin Concern (Mencari ingredients aktif, Bobot: 60%)
-  const userConcerns = safeParse(userProfile.concerns);
-  const productIngredients = safeParse(product.ingredients);
-
-  let matchesConcern = false;
-  const ingredientsLower = productIngredients.map((i: string) => String(i).toLowerCase());
-
-  for (const c of userConcerns) {
-    const concern = String(c).toLowerCase();
-    if (
-      concern.includes("jerawat") &&
-      (ingredientsLower.includes("salicylic acid") || ingredientsLower.includes("tea tree extract"))
-    )
-      matchesConcern = true;
-    if (
-      concern.includes("kusam") &&
-      (ingredientsLower.includes("niacinamide") ||
-        ingredientsLower.includes("ascorbic acid") ||
-        ingredientsLower.includes("galactomyces"))
-    )
-      matchesConcern = true;
-    if (
-      concern.includes("penuaan") &&
-      (ingredientsLower.includes("retinol") || ingredientsLower.includes("peptides"))
-    )
-      matchesConcern = true;
-    if (
-      concern.includes("kering") &&
-      (ingredientsLower.includes("ceramide np") ||
-        ingredientsLower.includes("hyaluronic acid") ||
-        ingredientsLower.includes("glycerin"))
-    )
-      matchesConcern = true;
-  }
-
-  // Jika produk ini punya bahan ajaib untuk concern si user, jarak = 0.
-  if (!matchesConcern && userConcerns.length > 0) {
-    distance += 1.0 * 0.6; // Penalti karena gak ada ingredient yang ngefek
-  }
-
-  return Math.sqrt(distance);
+/**
+ * 📐 RUMUS EUCLIDEAN DISTANCE (Sesuai Request User)
+ * d = sqrt((X1_n - X1_c)^2 + (X2_n - X2_c)^2 + (X3_n - X3_c)^2)
+ */
+function calculateEuclideanDistance(u1: any, u2: any) {
+  const x1_diff = Math.pow(u1.gender - u2.gender, 2);
+  const x2_diff = Math.pow(u1.skinType - u2.skinType, 2);
+  const x3_diff = Math.pow(u1.age - u2.age, 2);
+  return Math.sqrt(x1_diff + x2_diff + x3_diff);
 }
 
 export async function GET(req: Request) {
-  const user = await getUserFromRequest(req);
-  if (!user || !user.profile) {
-    return NextResponse.json(
-      { message: "Anda harus login dan mengisi kuesioner kulit!" },
-      { status: 400 },
-    );
+  const currentUser = await getUserFromRequest(req);
+  if (!currentUser || !currentUser.profile) {
+    return NextResponse.json({ message: "Sesi tidak valid." }, { status: 400 });
   }
 
-  const profile = user.profile;
+  const profile = currentUser.profile;
   const userAllergies = safeParse(profile.allergies).map((a) => String(a).toLowerCase());
 
-  // Panggil Semua Katalog Produk di Database
+  // 1. CARI USER LAIN (BASIS KASUS)
+  const otherProfiles = await prisma.userProfile.findMany({
+    where: { NOT: { userId: currentUser.id } },
+    include: { user: { select: { name: true } } },
+    take: 100, // Sampel lebih banyak biar lebih akurat
+  });
+
+  // 2. HITUNG JARAK TIAP KASUS (CBR)
+  const casesWithDistance = otherProfiles
+    .map((p) => {
+      const dist = calculateEuclideanDistance(profile, p);
+      // Skala Persentase Linear (Makin jauh, makin kecil, limit 100)
+      // Jika jarak < 1 (identik), sim = 99%
+      const sim = Math.max(0, Math.floor(100 / (1 + dist * 0.05)));
+
+      return {
+        caseId: p.userId,
+        name: p.user.name,
+        age: p.age,
+        skinType: p.skinType,
+        concerns: safeParse(p.concerns),
+        distance: Number(dist.toFixed(2)),
+        similarity: sim,
+      };
+    })
+    .sort((a, b) => a.distance - b.distance);
+
+  // Ambil TOP 10 KASUS untuk Detail Modal
+  const topCases = casesWithDistance.slice(0, 10);
+  const winnerCase = topCases[0];
+
+  // 3. AMBIL PRODUK BERDASARKAN KRITERIA PEMENANG (REUSE)
   const allProducts = await prisma.product.findMany({ where: { isActive: true } });
 
-  // 1. FILTERING: Otomatis buang/hindari produk yang mengandung alergi bagi user ini
+  // Filter Alergi
   const safeProducts = allProducts.filter((p) => {
     const ingredients = safeParse(p.ingredients).map((i) => String(i).toLowerCase());
-    const isAllergic = ingredients.some((ing) => userAllergies.includes(ing));
-    return !isAllergic;
+    return !ingredients.some((ing) => userAllergies.includes(ing));
   });
 
-  // 2. K-NEAREST NEIGHBOR (CBR) SCORING
-  const scoredProducts = safeProducts.map((product) => {
-    const distance = calculateEuclideanDistance(profile, product);
-    return {
-      ...product,
-      distance,
-    };
-  });
+  // 4. SYNC PRODUCT MATCH RATE (Sesuai Similarity Case)
+  const recommendedProducts = safeProducts
+    .map((p) => {
+      const pSuitable = safeParse(p.suitableFor);
+      // Base Match Rate mengikuti Similarity Kasus Terdekat jika produk cocok
+      let matchRate = winnerCase?.similarity || 85;
 
-  // Urutkan dari Jarak Terdekat (Paling Kecil = Paling Mirip/Cocok)
-  scoredProducts.sort((a, b) => a.distance - b.distance);
+      // Penyesuaian margin agar tidak semua produk angkanya sama persis
+      if (pSuitable.includes(profile.skinType)) matchRate += 2;
+      else matchRate -= 15; // Penalti jika tidak cocok skin type
 
-  // Ambil TOP 4 Produk Terbaik (K=4)
-  const recommendations = scoredProducts.slice(0, 4);
+      return { ...p, matchRate: Math.min(99, Math.max(60, matchRate)) };
+    })
+    .sort((a, b) => b.matchRate - a.matchRate)
+    .slice(0, 4);
 
-  return NextResponse.json({ products: recommendations }, { status: 200 });
+  return NextResponse.json(
+    {
+      products: recommendedProducts,
+      similarCases: topCases,
+    },
+    { status: 200 },
+  );
 }
