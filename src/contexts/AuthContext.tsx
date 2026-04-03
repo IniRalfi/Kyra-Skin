@@ -7,8 +7,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 interface UserProfile {
   age: number;
   gender: number;
-  skin_type: number;
-  skin_concerns?: string | null;
+  skinType: number; // <-- Ubah menjadi camelCase alias pakai 'T' besar agar sama persis dengan Prisma!
+  concerns?: any; // (Boleh ubah jadi 'concerns' dari sebelumnya 'skin_concerns' kalau mau presisi juga)
+  allergies?: any;
 }
 
 interface User {

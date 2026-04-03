@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     age: profile?.age ?? "",
     gender: profile?.gender ?? 0,
-    skin_type: profile?.skin_type ?? 0,
+    skin_type: profile?.skinType ?? 0,
     skin_concerns: "",
   });
   const [saving, setSaving] = useState(false);
@@ -44,7 +44,7 @@ export default function ProfilePage() {
       setForm({
         age: profile.age,
         gender: profile.gender,
-        skin_type: profile.skin_type,
+        skin_type: profile.skinType, // <-- Ubah di sini (pakai T besar untuk profilnya)
         skin_concerns: "",
       });
     }
@@ -124,7 +124,7 @@ export default function ProfilePage() {
                 {[
                   { label: "Usia", value: `${profile.age} tahun` },
                   { label: "Gender", value: GENDER_LABELS[profile.gender] ?? "-" },
-                  { label: "Tipe Kulit", value: SKIN_LABELS[profile.skin_type] ?? "-" },
+                  { label: "Tipe Kulit", value: SKIN_LABELS[profile.skinType] ?? "-" },
                 ].map(({ label, value }) => (
                   <div key={label} className="bg-white/50 rounded-2xl p-4 border border-white/70">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">
