@@ -209,7 +209,7 @@ function HeroSection() {
               className="font-normal text-[#e8779b]"
               style={{ fontFamily: "var(--font-calming), cursive", fontSize: "1.1em" }}
             >
-              Bukan Kebetulan.
+              Bukan Kebetulan
             </span>
           </motion.h1>
           <motion.p
