@@ -66,6 +66,14 @@ export function AppNavbar() {
               <Link href="/profile" className="hover:text-[#111] transition-colors">
                 Profil
               </Link>
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin/users"
+                  className="text-[#e8779b] hover:text-pink-600 transition-colors font-black"
+                >
+                  🛡️ Admin CMS
+                </Link>
+              )}
             </>
           )}
         </div>
