@@ -23,12 +23,11 @@ export async function GET(req: Request) {
     orderBy: { createdAt: "desc" },
   });
 
-  // Rombak format datanya agar pas dengan properti "interface AllergyCase" yang diminta Frontend
-  const allergies = rawAllergies.map((a) => ({
+  const allergies = rawAllergies.map((a: any) => ({
     id: a.id,
-    reaction_details: a.reaction, // Nama database Prisma: reaction, tapi UI mintanya reaction_details
-    status: a.severity > 1 ? "verified_by_ai" : "pending", // Logika dummy status verifikasi
-    created_at: a.createdAt.toISOString(), // Tanggal stringifikasi
+    reaction_details: a.reaction,
+    status: a.severity > 1 ? "verified_by_ai" : "pending",
+    created_at: a.createdAt.toISOString(),
     product: a.product,
   }));
 
