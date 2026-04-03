@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
                   Peran
                 </th>
                 <th className="pb-4 px-2 text-xs font-extrabold uppercase tracking-widest text-[#e8779b]/60 text-right">
-                  Amuk Massa
+                  Kelola Akun
                 </th>
               </tr>
             </thead>
@@ -108,7 +108,7 @@ export default function AdminUsersPage() {
                       disabled={u.role === "admin"}
                       className="px-4 py-2 bg-white text-red-500 border border-red-100 rounded-xl hover:bg-red-500 hover:text-white hover:border-transparent transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm active:scale-95"
                     >
-                      Ban
+                      Hapus
                     </button>
                   </td>
                 </tr>
