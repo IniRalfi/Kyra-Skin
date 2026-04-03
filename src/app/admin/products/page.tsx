@@ -135,9 +135,7 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: number, name: string) => {
-    const wani = window.confirm(
-      `Yakin mau menarik dan membuang permanen sisa ampas ramuan "${name}"?`,
-    );
+    const wani = window.confirm(`Yakin mau menarik dan membuang permanen Skincare "${name}"?`);
     if (wani) {
       try {
         await api.delete(`/admin/products?id=${id}`);
@@ -163,7 +161,7 @@ export default function AdminProductsPage() {
           onClick={isAdding ? handleCancel : () => setIsAdding(true)}
           className={`px-6 py-3.5 rounded-full text-white font-extrabold text-sm shadow-xl transition-all ${isAdding ? "bg-gray-400 hover:bg-gray-500" : "bg-[#111] hover:bg-black hover:scale-105"}`}
         >
-          {isAdding ? "❌ Tutup Panel Kaca" : "✨ + Tambah Ramuan"}
+          {isAdding ? "❌ Tutup Panel Kaca" : "✨ + Tambah Skincare"}
         </button>
       </div>
 
@@ -251,7 +249,7 @@ export default function AdminProductsPage() {
             </div>
             <div className="col-span-2">
               <label className="text-xs font-extrabold text-gray-500 mb-2 block uppercase tracking-widest">
-                Senjata Ramuan Aktif (Pisahkan dg Koma)
+                Senjata Skincare Aktif (Pisahkan dg Koma)
               </label>
               <input
                 required
@@ -289,7 +287,7 @@ export default function AdminProductsPage() {
             type="submit"
             className="bg-[#e8779b] text-white px-6 py-4 rounded-xl font-extrabold text-sm w-full hover:bg-pink-500 transition-all shadow-lg shadow-pink-200 active:scale-[0.99] uppercase tracking-widest"
           >
-            {editingId ? "✨ Selesai Merevisi Ramuan" : "🚀 Simpan & Luncurkan Etalase"}
+            {editingId ? "✨ Selesai Merevisi Skincare" : "🚀 Simpan & Luncurkan Etalase"}
           </button>
         </form>
       )}
@@ -373,7 +371,7 @@ export default function AdminProductsPage() {
                       onClick={() => handleDelete(p.id, p.name)}
                       className="px-4 py-2.5 bg-white text-red-500 border border-red-100 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-95"
                     >
-                      🗑️ Binasa
+                      🗑️ Hapus
                     </button>
                   </td>
                 </tr>
